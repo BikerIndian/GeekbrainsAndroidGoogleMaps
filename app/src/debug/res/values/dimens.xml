@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="little">4dp</dimen>
+    <dimen name="medium">8dp</dimen>
+    <dimen name="high">16dp</dimen>
+
+    <dimen name="item_list_position_margin">@dimen/little</dimen>
+    <dimen name="text_margin">@dimen/medium</dimen>
+
+    <dimen name="padding">16dp</dimen>
+
+</resources>
