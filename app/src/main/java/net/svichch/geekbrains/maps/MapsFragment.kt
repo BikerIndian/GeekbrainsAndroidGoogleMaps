@@ -5,13 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import net.svichch.geekbrains.maps.databinding.FragmentMapsBinding
+import net.svichch.geekbrains.maps.geo.GeoPermission
 
 class MapsFragment : Fragment() {
 
@@ -20,41 +16,38 @@ class MapsFragment : Fragment() {
     }
 
     private lateinit var mapsBinding: FragmentMapsBinding
-
-    private val callback = OnMapReadyCallback {
-        onMapReady(it)
-    }
+    private lateinit var googleMapUtil: GoogleMapUtil
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        googleMapUtil = GoogleMapUtil((requireActivity() as MainActivity))
         mapsBinding = FragmentMapsBinding.inflate(inflater, container, false)
         return mapsBinding.root
-    }
-
-    private fun onMapReady(googleMap: GoogleMap) {
-
-        googleMap.setOnMapLongClickListener { latLng ->
-            googleMap.addMarker(
-                MarkerOptions().position(
-                    latLng
-                )
-            )
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(callback)
+        mapFragment?.getMapAsync(googleMapUtil.callback())
 
         mapsBinding.btnListPosition.setOnClickListener {
             toListPositionFragment()
         }
 
+    }
+
+    // Это результат запроса у пользователя пермиссии
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String?>, grantResults: IntArray
+    ) {
+        if (GeoPermission.isPermissionsResult(requestCode, grantResults)) {
+            googleMapUtil.goToMapGeoLocation()
+        }
     }
 
     // Переход на фрагмент список маркеров
