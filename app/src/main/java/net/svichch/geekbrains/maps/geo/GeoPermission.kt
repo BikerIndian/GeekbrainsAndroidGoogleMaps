@@ -7,7 +7,7 @@ import androidx.core.app.ActivityCompat
 
 class GeoPermission() {
 
-    companion object{
+    companion object {
 
         private val PERMISSION_REQUEST_CODE = 10
 
@@ -69,8 +69,4 @@ class GeoPermission() {
             )
         }
     }
-
-
-
-
 }

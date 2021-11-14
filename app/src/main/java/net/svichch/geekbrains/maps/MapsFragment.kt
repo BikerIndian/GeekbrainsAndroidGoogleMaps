@@ -9,22 +9,24 @@ import com.google.android.gms.maps.SupportMapFragment
 import net.svichch.geekbrains.maps.databinding.FragmentMapsBinding
 import net.svichch.geekbrains.maps.geo.GeoPermission
 
-class MapsFragment : Fragment() {
-
-    companion object {
-        fun newInstance() = MapsFragment()
-    }
+class MapsFragment : Fragment(){
 
     private lateinit var mapsBinding: FragmentMapsBinding
-    private lateinit var googleMapUtil: GoogleMapUtil
+
+    companion object {
+        private lateinit var googleMapUtil: GoogleMapUtil
+        fun newInstance(): Fragment {
+            googleMapUtil = GoogleMapUtil()
+            return MapsFragment()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        googleMapUtil = GoogleMapUtil((requireActivity() as MainActivity))
+        setButtonBackOff()
         mapsBinding = FragmentMapsBinding.inflate(inflater, container, false)
         return mapsBinding.root
     }
@@ -33,12 +35,11 @@ class MapsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(googleMapUtil.callback())
+        mapFragment?.getMapAsync(googleMapUtil.callback((requireActivity() as MainActivity)))
 
         mapsBinding.btnListPosition.setOnClickListener {
             toListPositionFragment()
         }
-
     }
 
     // Это результат запроса у пользователя пермиссии
@@ -50,8 +51,18 @@ class MapsFragment : Fragment() {
         }
     }
 
+    private fun setButtonBackOff() {
+        val actionBar = (requireActivity() as MainActivity).getSupportActionBar()
+        actionBar?.setHomeButtonEnabled(false)
+        actionBar?.setDisplayHomeAsUpEnabled(false)
+    }
+
     // Переход на фрагмент список маркеров
     private fun toListPositionFragment() {
-        (requireActivity() as MainActivity).navigateTo(ListPositionFragment.newInstance())
+        (requireActivity() as MainActivity).navigateTo(
+            ListPositionFragment.newInstance(
+                googleMapUtil.getMarkerList()
+            )
+        )
     }
 }

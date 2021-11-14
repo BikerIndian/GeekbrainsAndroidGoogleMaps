@@ -9,13 +9,11 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.LatLng
 
 class GeoLocation {
 
     // Запрос координат
-    fun requestLocation(context : Context, geo : IGeo ) {
+    fun requestLocation(context: Context, geo: IGeo) {
         // Если пермиссии все таки нет - то просто выйдем, приложение не имеет смысла
         if (ActivityCompat.checkSelfPermission(
                 context,
@@ -26,6 +24,7 @@ class GeoLocation {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) return
+
         // Получить менеджер геолокаций
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val criteria = Criteria()
@@ -40,13 +39,13 @@ class GeoLocation {
             // Будем получать геоположение через каждые 10 секунд или каждые 10 метров
             locationManager.requestLocationUpdates(provider, 10000, 10f, object : LocationListener {
                 override fun onLocationChanged(location: Location) {
-                    geo.geoDataResult(GeoData(location.latitude,location.longitude, location.accuracy))
-                    println("------------------------------>")
-                    //location.latitude Широта
-                    //location.longitude Долгота
-                    //location.accuracy Точность
-
-
+                    geo.geoDataResult(
+                        GeoData(
+                            location.latitude,   //Широта
+                            location.longitude,  //Долгота
+                            location.accuracy    //Точность
+                        )
+                    )
                 }
 
                 override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}

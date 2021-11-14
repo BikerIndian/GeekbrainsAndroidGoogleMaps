@@ -5,16 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.android.gms.maps.model.MarkerOptions
 import net.svichch.geekbrains.maps.databinding.FragmentListPositionBinding
-import net.svichch.geekbrains.maps.databinding.FragmentMapsBinding
 
-class ListPositionFragment : Fragment() {
+class ListPositionFragment(var markerList: MutableList<MarkerOptions>) : Fragment(),
+    ListMarkerAdapter.AdapterMarkerFunctional {
 
     companion object {
-        fun newInstance() = ListPositionFragment()
+        fun newInstance(markerListIns: MutableList<MarkerOptions>) =
+            ListPositionFragment(markerListIns)
     }
 
     private lateinit var listPosition: FragmentListPositionBinding
+    private lateinit var adapter: ListMarkerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,5 +26,23 @@ class ListPositionFragment : Fragment() {
     ): View? {
         listPosition = FragmentListPositionBinding.inflate(inflater, container, false)
         return listPosition.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setButtonBackOn()
+        adapter = ListMarkerAdapter(markerList, this)
+        listPosition.mainRecycler.adapter = adapter
+    }
+
+    private fun setButtonBackOn() {
+        val actionBar = (requireActivity() as MainActivity).getSupportActionBar()
+        actionBar?.setHomeButtonEnabled(true)
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun removeMarker(marker: MarkerOptions) {
+        markerList.remove(marker)
+        adapter.notifyDataSetChanged()
     }
 }
