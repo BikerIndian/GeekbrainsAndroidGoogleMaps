@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.maps.model.MarkerOptions
 import net.svichch.geekbrains.maps.databinding.FragmentListPositionBinding
 
-class ListPositionFragment(var markerList: MutableList<MarkerOptions>) : Fragment(),
+class ListPositionFragment(private var markerList: MutableList<MarkerOptions>) : Fragment(),
     ListMarkerAdapter.AdapterMarkerFunctional {
 
     companion object {
@@ -44,5 +44,9 @@ class ListPositionFragment(var markerList: MutableList<MarkerOptions>) : Fragmen
     override fun removeMarker(marker: MarkerOptions) {
         markerList.remove(marker)
         adapter.notifyDataSetChanged()
+    }
+
+    override fun renameTitle(marker: MarkerOptions, text: String) {
+        marker.title(text)
     }
 }

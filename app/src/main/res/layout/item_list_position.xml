@@ -24,7 +24,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:backgroundTint="@android:color/holo_purple">
 
-            <TextView
+            <EditText
                 android:id="@+id/titleId"
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="match_parent"
