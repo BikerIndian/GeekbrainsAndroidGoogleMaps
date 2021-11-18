@@ -8,17 +8,23 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import net.svichch.geekbrains.maps.games.GamesCar
 import net.svichch.geekbrains.maps.geo.GeoData
 import net.svichch.geekbrains.maps.geo.GeoLocation
 import net.svichch.geekbrains.maps.geo.GeoPermission
 import net.svichch.geekbrains.maps.geo.IGeo
 import java.io.IOException
+import java.lang.Math.toRadians
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 class GoogleMapUtil() {
 
     private lateinit var googleMap: GoogleMap
     private lateinit var currentMarker: Marker
     private lateinit var mainActivity: MainActivity
+    private lateinit var gameCar : GamesCar
     private val markers = mutableListOf<MarkerOptions>()
 
     fun callback(mainActivityin: MainActivity): OnMapReadyCallback {
@@ -37,7 +43,8 @@ class GoogleMapUtil() {
         if (GeoPermission().isPemissions(mainActivity)) {
             goToMapGeoLocation()
         }
-        addMarkerOnClickForMap()
+       // addMarkerOnClickForMap()
+        gameCar = GamesCar(googleMap,mainActivity)
     }
 
     private fun addSaveMarkers() {
@@ -61,6 +68,7 @@ class GoogleMapUtil() {
                 MarkerOptions().position(sydney)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)) // Цвет маркера
                     .alpha(0.7f) // прозрачности маркера
+                    .visible(false)
 
             )!!
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
@@ -87,6 +95,7 @@ class GoogleMapUtil() {
                 12.toFloat()
             )
         )
+        gameCar.start()
     }
 
     private fun addMarker(marker: MarkerOptions) {
@@ -114,5 +123,31 @@ class GoogleMapUtil() {
 
     fun getMarkerList(): MutableList<MarkerOptions> {
         return markers
+    }
+    companion object{
+
+        // Определить угол по координатам
+        fun positionToRotation(
+            current: LatLng,
+            destination: LatLng
+        ): Float {
+
+            var currentLat = current.latitude
+            var currentLon = current.longitude
+            var destinationLat = destination.latitude
+            var destinationLon = destination.longitude
+
+            currentLat = toRadians(currentLat)
+            currentLon = toRadians(currentLon)
+            destinationLat = toRadians(destinationLat)
+            destinationLon = toRadians(destinationLon)
+
+            val X: Double = cos(destinationLat) * sin((destinationLon - currentLon))
+            val Y: Double = cos(currentLat) * sin(destinationLat) -
+                    sin(currentLat) * cos(destinationLat) * cos((destinationLon - currentLon))
+            val radianBearing = atan2(X, Y)
+
+            return Math.toDegrees(radianBearing).toFloat()
+        }
     }
 }
